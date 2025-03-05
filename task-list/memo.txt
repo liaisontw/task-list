@@ -1,0 +1,30 @@
+1. Route: in routes/web.php:
+    i. Available Router Methods:
+        Route::get($uri, $callback);
+        Route::post($uri, $callback);
+        Route::put($uri, $callback);
+        Route::delete($uri, $callback);
+        [Not used yet]Route::patch($uri, $callback);
+        [Not used yet]Route::options($uri, $callback);
+
+    ii. php artisan route:list
+        GET|HEAD  tasks ........................................ tasks.index  
+        POST      tasks ........................................ tasks.store  
+        GET|HEAD  tasks/create ................................ tasks.create  
+        PUT       tasks/{task} ................................ tasks.update  
+        DELETE    tasks/{task} ............................... tasks.destroy  
+        GET|HEAD  tasks/{task}/edit ............................. tasks.edit  
+        GET|HEAD  tasks/{task}/show ............................. tasks.show  
+        PUT       tasks/{task}/toggle-complete ....... tasks.toggle-complete  
+
+    iii. Named Routes
+        Named routes allow the convenient generation of URLs or redirects for 
+        specific routes. You may specify a name for a route by chaining the 
+        name method onto the route definition:
+        Eg1.,
+        Route::get('/tasks', function () { return view(...); })->name('tasks.index');
+                                                                ^^^^^^^^^^^^^^^^^^^^
+        Eg2.,
+        Route::get('/tasks/{task}/edit', function (Task $task) {
+            ...        })->name('tasks.edit');
+                         ^^^^^^^^^^^^^^^^^^^^

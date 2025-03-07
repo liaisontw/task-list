@@ -6,9 +6,14 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+/*
 Route::get('/', function () {
     return redirect()->route('tasks.index');
 });
+*/
+
+Route::redirect('/', 'tasks.index');
 
 Route::get('/tasks', function () {
     return view('index', [
@@ -17,7 +22,7 @@ Route::get('/tasks', function () {
 })->name('tasks.index');
 
 Route::view('/tasks/create', 'create')
-->name('tasks.create');;
+->name('tasks.create');
 
 Route::get('/tasks/{task}/edit', function (Task $task) {
     return view('edit', [

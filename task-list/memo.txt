@@ -1,3 +1,10 @@
+0. Environment setting: in .env:
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=
+    DB_USERNAME=
+    DB_PASSWORD=
 1. Route: in routes/web.php:
     i. Available Router Methods:
         Route::get($uri, $callback);
@@ -22,9 +29,65 @@
         specific routes. You may specify a name for a route by chaining the 
         name method onto the route definition:
         Eg1.,
-        Route::get('/tasks', function () { return view(...); })->name('tasks.index');
-                                                                ^^^^^^^^^^^^^^^^^^^^
+        Route::get('/tasks', function () { return view(...); })->name('tasks.index');                                                   ^^^^^^^^^^^^^^^^^^^^
         Eg2.,
         Route::get('/tasks/{task}/edit', function (Task $task) {
             ...        })->name('tasks.edit');
                          ^^^^^^^^^^^^^^^^^^^^
+    
+    iv. View Routes
+        If your route only needs to return a view, you may use the Route::view 
+        method. Like the redirect method, this method provides a simple shortcut
+         so that you do not have to define a full route or controller. 
+        Eg1.,
+         Route::view('/tasks/create', 'create')->name('tasks.create');
+                ^^^^
+        Eg2.,
+         Route::get('/', function () { return redirect()->route('tasks.index'); });
+                                              ^^^^^^^^^^
+        (Better way?)==>
+        (Route::redirect('/', 'tasks.index');)
+
+2. Eloquent ORM (Object-Relational Mapper)
+    Laravel includes Eloquent, an object-relational mapper (ORM) 
+    that makes it enjoyable to interact with your database. 
+    When using Eloquent, each database table has a corresponding
+     "Model" that is used to interact with that table. 
+    In addition to retrieving records from the database table, 
+    Eloquent models allow you to insert, update, and delete records
+     from the table as well.
+    Eloquent ORM 是 Laravel 框架的官方物件關聯映射(ORM)系統，它提供了一個
+    簡單的 ActiveRecord 實現，可以用面向對象的方式操作數據庫(資料庫抽象層)。
+    使用 Eloquent 可以透過模型對象來處理數據庫操作，並且可以輕鬆地定義和管理
+    數據表之間的關係。(提供單一介面，與多種資料庫互動: sqlite/mysql/mariadb/pgsql)
+    ActiveRecord的意思是一個Eloquent類別不但負責提供與整個資料表互動的能力
+    (如User::all()來取得所有用戶)，也可以代表一個單獨的資料列(如$sharon = new User)
+    每一個實例都可以管理自己的持久保存，如$sharon->save() 或 $sharon->delete()
+
+    主要特性：
+    簡單的數據庫操作：無需直接寫 SQL 語句，用模型方法來進行查詢和操作。
+    數據表與模型的對應：每個模型對應一個數據表，模型的屬性和方法代表了表中的列和操作。
+    關聯管理：輕鬆定義和管理表之間的關聯（如一對多、多對多等）。
+    💡 ORM 是一種技術，它把資料庫中的資料表格和記錄映射成程式中的對象，
+    讓你可以像操作物件一樣操作資料庫中的資料，而不需要直接寫 SQL 查詢。
+
+    Eloquent目標在於簡化，"約定優於配置"
+    app/Models/Task.php
+    class Task extends Model {}
+
+    class TaskRequest extends FormRequest{
+       public function rules(): array {
+           return [
+               'title' => 'required|max:255',
+               'description' => 'required',
+               'long_description' => 'required'
+           ];  }    }
+   
+    
+    2-1 Model: in app/Models/Task.php
+    i. php artisan make:model Task -m
+       Create app/Models/Task.php & 
+       (-m) database/migrations/[data]_create_tasks_table.php
+
+3. Database:
+    i. php artisan migrate

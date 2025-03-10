@@ -72,22 +72,27 @@
     讓你可以像操作物件一樣操作資料庫中的資料，而不需要直接寫 SQL 查詢。
 
     Eloquent目標在於簡化，"約定優於配置"
-    app/Models/Task.php
-    class Task extends Model {}
-
-    class TaskRequest extends FormRequest{
-       public function rules(): array {
-           return [
-               'title' => 'required|max:255',
-               'description' => 'required',
-               'long_description' => 'required'
-           ];  }    }
-   
-    
     2-1 Model: in app/Models/Task.php
+ 
+    class Task extends Model{
+	    use HasFactory;
+	    protected $fillable = ['title', 'description', 'long_description'];
+	    public function toggleComplete()    {
+        	$this->completed = !$this->completed;
+	        $this->save();
+	    }
+	}
+
     i. php artisan make:model Task -m
        Create app/Models/Task.php & 
-       (-m) database/migrations/[data]_create_tasks_table.php
+       (-m: database/migrations/[data]_create_tasks_table.php )
+       Task.php ==> create_tasks_table.php
+        ^^^^  single -> plural^^
+
+    ii. Retrieving Models
+    Route::get('/tasks', function () {
+        return view('index', ['tasks' => Task::latest()/Task::all()   ]);
+    });
 
 3. Database:
     i. php artisan migrate

@@ -48,6 +48,23 @@
         (Better way?)==>
         (Route::redirect('/', 'tasks.index');)
 
+    v. Form Method Spoofing (HTML表單的HTTP方法欺騙)
+        HTML forms do not support PUT, PATCH, or DELETE actions. 
+        So, when defining PUT, PATCH, or DELETE routes that are 
+        called from an HTML form, you will need to add a hidden 
+        _method field to the form. 
+        標準:
+        <form action="/example" method="POST">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        </form>
+        簡化:
+        <form action="/example" method="POST">
+            @method('PUT')
+            @csrf
+        </form>
+
+
 2. Eloquent ORM (Object-Relational Mapper)
     Laravel includes Eloquent, an object-relational mapper (ORM) 
     that makes it enjoyable to interact with your database. 
@@ -89,10 +106,51 @@
        Task.php ==> create_tasks_table.php
         ^^^^  single -> plural^^
 
-    ii. Retrieving Models
+    ii. Retrieving Models 
+    隱性路由綁定：幫路由參數取一個獨一無二的model名稱，如Task而非id
     Route::get('/tasks', function () {
         return view('index', ['tasks' => Task::latest()/Task::all()   ]);
     });
 
-3. Database:
-    i. php artisan migrate
+    Route::get('/tasks/{task}/edit', function (Task $task) {
+        return view('edit', [
+        'task' => $task
+        ]);    
+    })->name('tasks.edit');
+
+3. Blade Template 模板:
+    i. Blade echo:
+        {{ }}等同echo，{{ $var }}等同<?= $var ?>，嚴格來說相當於<?= htmlentities($var) ?>
+        想要echo未轉義的資料，可用{!! !!}。@{{ handleVar }}會echo {{ handleVar }}。
+    ii. condition
+        @if (condition 1)
+            ....
+        @elseif (condition 2)
+            ....
+        @else
+            ....
+        @endif
+    iii. @forelse (被迭代的物件(如$task)為空時，有後備機制的@foreach)
+        @forelse ($tasks as $task)
+            <div>
+                <a href="{{ route('tasks.show', ['task' => $task->id]) }}"
+                @class(['line-through' => $task->completed ]) > {{ $task->title }}</a>
+            </div>
+        @empty
+            <div>There are no tasks!</div>
+        @endforelse
+
+    iv. @for/@endfor，@foreach/@endforeach，@while/@endwhile
+    v. 模板繼承
+        以create.blade.php/edit.blade.php為例：
+
+        @extends('layouts.app'): 以resources/views/layouts/app.blade.php擴展，
+        @yield('styles'), @yield('title'), @yield('content')
+
+        @section('content')
+            @include('form')
+        @endsection
+
+        @yield('content')會被 @section('content')/@endsection置換，即@include('form')
+        引入 form.blade.php，調用$task->title/description/long_description(資料庫)
+        
